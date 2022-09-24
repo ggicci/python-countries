@@ -7,3 +7,29 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 countries = ["database"]
+
+[tool.pdm]
+[[tool.pdm.source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+[tool.pdm.dev-dependencies]
+dev = [
+    "pytest",
+]
+
+[project]
+name = "python-countries"
+version = "0.1.0"
+description = "Country information database. Including names, capitals, currencies, etc."
+authors = [
+    {name = "Ggicci", email = "ggicci.t@gmail.com"},
+]
+dependencies = []
+requires-python = ">=3.9"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
