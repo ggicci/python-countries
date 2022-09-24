@@ -14,36 +14,68 @@ class CountryCode:
 
 @dataclass(frozen=True)
 class Property:
-    country: str  # alpha-3 code
+    country_code: str  # alpha-3 code
     key: str
 
 
 class DataLoader:
+    class OverrideLevel:
+        """
+        Override level for merging databases.
+
+        {
+            field_name: { // <-- FIELD level
+                locale: { // <-- LOCALE level
+                    country_code: value // ITEM level
+                }
+            }
+        }
+        """
+
+        FIELD = 1
+        LOCALE = 2
+        ITEM = 3
+
     def __init__(self, data_dir: Path = DEFAULT_DATA_DIR) -> None:
-        self.data_dir = data_dir
+        self.databases = []  # [ (Path, OverrideLevel) ]
         self.countries = {}  # { code: CountryCode }
         self.files = {}  # { field_name: { locale: file } }
         self.dat = {}  # { field_name: { locale: { alpha3_code: value } } }
-        self.load_database()
+        self.merge_database(data_dir)
 
-    def load_database(self) -> None:
-        self.__load_country_codes()
-        self.__build_data_file_index()
-        for field_name, locale_files in self.files.items():
+    def merge_database(
+        self, data_dir: Path, override_level: OverrideLevel = OverrideLevel.ITEM
+    ) -> None:
+        """
+        Merge a new database into the data loader.
+
+        Raises:
+            ValueError: if the database is already loaded or the database is invalid.
+        """
+        if data_dir in self.databases:
+            raise ValueError(f"Database {data_dir} already loaded")
+        self.__load_database(data_dir, override_level)
+
+    def __load_database(self, data_dir: Path, override_level: OverrideLevel) -> None:
+        if not self.countries:
+            self.__load_country_codes(data_dir)  # only load countries once
+        files = self.__build_data_file_index(data_dir)
+        for field_name, locale_files in files.items():
             for locale, file in locale_files.items():
-                self.__load_data_file(field_name, locale, file)
+                self.__load_data_file(field_name, locale, file, override_level)
+        self.databases.append((data_dir, override_level))
 
-    def lookup(self, field: Property, locale: str = "en") -> Optional[str]:
+    def lookup(self, country_code: str, key: str, locale: str = "en") -> Optional[str]:
         """Lookup a property value with specified locale."""
-        locale_data = self.dat.get(field.key, {})
-        return locale_data.get(locale, {}).get(field.country, None)
+        locale_data = self.dat.get(key, {})
+        return locale_data.get(locale, {}).get(country_code, None)
 
     def lookup_country_code(self, code: str) -> Optional["CountryCode"]:
         """Lookup country code by alpha-3 code, alpha-2 code, or numeric code."""
         return self.countries.get(code)
 
-    def __load_country_codes(self) -> None:
-        with open(self.data_dir / "codes.tsv") as f:
+    def __load_country_codes(self, data_dir: Path) -> None:
+        with open(data_dir / "codes.tsv") as f:
             for line in f:
                 alpha2_code, alpha3_code, numeric_code = line.strip().split("\t")
                 code = CountryCode(
@@ -55,24 +87,38 @@ class DataLoader:
                 self.countries[alpha2_code] = code
                 self.countries[numeric_code] = code
 
-    def __build_data_file_index(self) -> None:
-        for file in self.data_dir.glob("*/*.tsv"):
+    def __build_data_file_index(self, data_dir: Path) -> dict:
+        files = {}  # { field_name: { locale: file } }
+        for file in data_dir.glob("*/*.tsv"):
             if not file.is_file():
                 raise ValueError(f"File {file} is not a file")
             relative = file.relative_to(
-                self.data_dir
+                data_dir
             )  # e.g. "name/en.tsv", "capital/zh.tsv", etc.
             field_name = relative.parent.name  # e.g. "name", "capital", etc.
             locale = relative.stem  # e.g. "en", "zh", etc.
-            if field_name not in self.files:
-                self.files[field_name] = {}
-            self.files[field_name][locale] = file
+            if field_name not in files:
+                files[field_name] = {}
+            files[field_name][locale] = file
+        return files
 
-    def __load_data_file(self, field_name: str, locale: str, file: Path) -> None:
-        if field_name not in self.dat:
+    def __load_data_file(
+        self, field_name: str, locale: str, file: Path, override_level: OverrideLevel
+    ) -> None:
+        # update self.files
+        if field_name not in self.files:
+            self.files[field_name] = {}
+        self.files[field_name][locale] = file
+
+        if field_name not in self.dat or override_level == self.OverrideLevel.FIELD:
             self.dat[field_name] = {}
-        if locale not in self.dat[field_name]:
+
+        if (
+            locale not in self.dat[field_name]
+            or override_level == self.OverrideLevel.LOCALE
+        ):
             self.dat[field_name][locale] = {}
+
         with open(file) as f:
             for line in f:
                 alpha2_code, value = line.strip().split("\t")

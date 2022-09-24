@@ -1,6 +1,9 @@
+from dataclasses import dataclass
+
 from .core import load_country
 
 
+@dataclass(frozen=True)
 class Country:
     AFG = load_country("AFG")
     ALB = load_country("ALB")
