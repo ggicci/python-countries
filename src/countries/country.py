@@ -1,256 +1,305 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
+from typing import Generic, Type, TypeVar
 
-from .core import load_country
+from countries.dataloader import DataLoader
+
+from .core import (
+    CountryData,
+    CountryDataType,
+    CustomCountryData,
+    default_dataloader,
+    load_country,
+)
+
+__countries: "FullCountryIndex"
+
+
+def countries() -> "FullCountryIndex[CountryData]":
+    """Get the index of all countries."""
+    return __countries
 
 
 @dataclass(frozen=True)
-class Country:
-    AFG = load_country("AFG")
-    ALB = load_country("ALB")
-    DZA = load_country("DZA")
-    ASM = load_country("ASM")
-    AND = load_country("AND")
-    AGO = load_country("AGO")
-    AIA = load_country("AIA")
-    ATA = load_country("ATA")
-    ATG = load_country("ATG")
-    ARG = load_country("ARG")
-    ARM = load_country("ARM")
-    ABW = load_country("ABW")
-    AUS = load_country("AUS")
-    AUT = load_country("AUT")
-    AZE = load_country("AZE")
-    BHS = load_country("BHS")
-    BHR = load_country("BHR")
-    BGD = load_country("BGD")
-    BRB = load_country("BRB")
-    BLR = load_country("BLR")
-    BEL = load_country("BEL")
-    BLZ = load_country("BLZ")
-    BEN = load_country("BEN")
-    BMU = load_country("BMU")
-    BTN = load_country("BTN")
-    BOL = load_country("BOL")
-    BES = load_country("BES")
-    BIH = load_country("BIH")
-    BWA = load_country("BWA")
-    BVT = load_country("BVT")
-    BRA = load_country("BRA")
-    IOT = load_country("IOT")
-    BRN = load_country("BRN")
-    BGR = load_country("BGR")
-    BFA = load_country("BFA")
-    BDI = load_country("BDI")
-    CPV = load_country("CPV")
-    KHM = load_country("KHM")
-    CMR = load_country("CMR")
-    CAN = load_country("CAN")
-    CYM = load_country("CYM")
-    CAF = load_country("CAF")
-    TCD = load_country("TCD")
-    CHL = load_country("CHL")
-    CHN = load_country("CHN")
-    CXR = load_country("CXR")
-    CCK = load_country("CCK")
-    COL = load_country("COL")
-    COM = load_country("COM")
-    COD = load_country("COD")
-    COG = load_country("COG")
-    COK = load_country("COK")
-    CRI = load_country("CRI")
-    HRV = load_country("HRV")
-    CUB = load_country("CUB")
-    CUW = load_country("CUW")
-    CYP = load_country("CYP")
-    CZE = load_country("CZE")
-    CIV = load_country("CIV")
-    DNK = load_country("DNK")
-    DJI = load_country("DJI")
-    DMA = load_country("DMA")
-    DOM = load_country("DOM")
-    ECU = load_country("ECU")
-    EGY = load_country("EGY")
-    SLV = load_country("SLV")
-    GNQ = load_country("GNQ")
-    ERI = load_country("ERI")
-    EST = load_country("EST")
-    SWZ = load_country("SWZ")
-    ETH = load_country("ETH")
-    FLK = load_country("FLK")
-    FRO = load_country("FRO")
-    FJI = load_country("FJI")
-    FIN = load_country("FIN")
-    FRA = load_country("FRA")
-    GUF = load_country("GUF")
-    PYF = load_country("PYF")
-    ATF = load_country("ATF")
-    GAB = load_country("GAB")
-    GMB = load_country("GMB")
-    GEO = load_country("GEO")
-    DEU = load_country("DEU")
-    GHA = load_country("GHA")
-    GIB = load_country("GIB")
-    GRC = load_country("GRC")
-    GRL = load_country("GRL")
-    GRD = load_country("GRD")
-    GLP = load_country("GLP")
-    GUM = load_country("GUM")
-    GTM = load_country("GTM")
-    GGY = load_country("GGY")
-    GIN = load_country("GIN")
-    GNB = load_country("GNB")
-    GUY = load_country("GUY")
-    HTI = load_country("HTI")
-    HMD = load_country("HMD")
-    VAT = load_country("VAT")
-    HND = load_country("HND")
-    HKG = load_country("HKG")
-    HUN = load_country("HUN")
-    ISL = load_country("ISL")
-    IND = load_country("IND")
-    IDN = load_country("IDN")
-    IRN = load_country("IRN")
-    IRQ = load_country("IRQ")
-    IRL = load_country("IRL")
-    IMN = load_country("IMN")
-    ISR = load_country("ISR")
-    ITA = load_country("ITA")
-    JAM = load_country("JAM")
-    JPN = load_country("JPN")
-    JEY = load_country("JEY")
-    JOR = load_country("JOR")
-    KAZ = load_country("KAZ")
-    KEN = load_country("KEN")
-    KIR = load_country("KIR")
-    PRK = load_country("PRK")
-    KOR = load_country("KOR")
-    KWT = load_country("KWT")
-    KGZ = load_country("KGZ")
-    LAO = load_country("LAO")
-    LVA = load_country("LVA")
-    LBN = load_country("LBN")
-    LSO = load_country("LSO")
-    LBR = load_country("LBR")
-    LBY = load_country("LBY")
-    LIE = load_country("LIE")
-    LTU = load_country("LTU")
-    LUX = load_country("LUX")
-    MAC = load_country("MAC")
-    MDG = load_country("MDG")
-    MWI = load_country("MWI")
-    MYS = load_country("MYS")
-    MDV = load_country("MDV")
-    MLI = load_country("MLI")
-    MLT = load_country("MLT")
-    MHL = load_country("MHL")
-    MTQ = load_country("MTQ")
-    MRT = load_country("MRT")
-    MUS = load_country("MUS")
-    MYT = load_country("MYT")
-    MEX = load_country("MEX")
-    FSM = load_country("FSM")
-    MDA = load_country("MDA")
-    MCO = load_country("MCO")
-    MNG = load_country("MNG")
-    MNE = load_country("MNE")
-    MSR = load_country("MSR")
-    MAR = load_country("MAR")
-    MOZ = load_country("MOZ")
-    MMR = load_country("MMR")
-    NAM = load_country("NAM")
-    NRU = load_country("NRU")
-    NPL = load_country("NPL")
-    NLD = load_country("NLD")
-    NCL = load_country("NCL")
-    NZL = load_country("NZL")
-    NIC = load_country("NIC")
-    NER = load_country("NER")
-    NGA = load_country("NGA")
-    NIU = load_country("NIU")
-    NFK = load_country("NFK")
-    MNP = load_country("MNP")
-    NOR = load_country("NOR")
-    OMN = load_country("OMN")
-    PAK = load_country("PAK")
-    PLW = load_country("PLW")
-    PSE = load_country("PSE")
-    PAN = load_country("PAN")
-    PNG = load_country("PNG")
-    PRY = load_country("PRY")
-    PER = load_country("PER")
-    PHL = load_country("PHL")
-    PCN = load_country("PCN")
-    POL = load_country("POL")
-    PRT = load_country("PRT")
-    PRI = load_country("PRI")
-    QAT = load_country("QAT")
-    MKD = load_country("MKD")
-    ROU = load_country("ROU")
-    RUS = load_country("RUS")
-    RWA = load_country("RWA")
-    REU = load_country("REU")
-    BLM = load_country("BLM")
-    SHN = load_country("SHN")
-    KNA = load_country("KNA")
-    LCA = load_country("LCA")
-    MAF = load_country("MAF")
-    SPM = load_country("SPM")
-    VCT = load_country("VCT")
-    WSM = load_country("WSM")
-    SMR = load_country("SMR")
-    STP = load_country("STP")
-    SAU = load_country("SAU")
-    SEN = load_country("SEN")
-    SRB = load_country("SRB")
-    SYC = load_country("SYC")
-    SLE = load_country("SLE")
-    SGP = load_country("SGP")
-    SXM = load_country("SXM")
-    SVK = load_country("SVK")
-    SVN = load_country("SVN")
-    SLB = load_country("SLB")
-    SOM = load_country("SOM")
-    ZAF = load_country("ZAF")
-    SGS = load_country("SGS")
-    SSD = load_country("SSD")
-    ESP = load_country("ESP")
-    LKA = load_country("LKA")
-    SDN = load_country("SDN")
-    SUR = load_country("SUR")
-    SJM = load_country("SJM")
-    SWE = load_country("SWE")
-    CHE = load_country("CHE")
-    SYR = load_country("SYR")
-    TWN = load_country("TWN")
-    TJK = load_country("TJK")
-    TZA = load_country("TZA")
-    THA = load_country("THA")
-    TLS = load_country("TLS")
-    TGO = load_country("TGO")
-    TKL = load_country("TKL")
-    TON = load_country("TON")
-    TTO = load_country("TTO")
-    TUN = load_country("TUN")
-    TUR = load_country("TUR")
-    TKM = load_country("TKM")
-    TCA = load_country("TCA")
-    TUV = load_country("TUV")
-    UGA = load_country("UGA")
-    UKR = load_country("UKR")
-    ARE = load_country("ARE")
-    GBR = load_country("GBR")
-    UMI = load_country("UMI")
-    USA = load_country("USA")
-    URY = load_country("URY")
-    UZB = load_country("UZB")
-    VUT = load_country("VUT")
-    VEN = load_country("VEN")
-    VNM = load_country("VNM")
-    VGB = load_country("VGB")
-    VIR = load_country("VIR")
-    WLF = load_country("WLF")
-    ESH = load_country("ESH")
-    YEM = load_country("YEM")
-    ZMB = load_country("ZMB")
-    ZWE = load_country("ZWE")
-    ALA = load_country("ALA")
+class FullCountryIndex(Generic[CountryDataType]):
+    AFG: CountryDataType
+    ALB: CountryDataType
+    DZA: CountryDataType
+    ASM: CountryDataType
+    AND: CountryDataType
+    AGO: CountryDataType
+    AIA: CountryDataType
+    ATA: CountryDataType
+    ATG: CountryDataType
+    ARG: CountryDataType
+    ARM: CountryDataType
+    ABW: CountryDataType
+    AUS: CountryDataType
+    AUT: CountryDataType
+    AZE: CountryDataType
+    BHS: CountryDataType
+    BHR: CountryDataType
+    BGD: CountryDataType
+    BRB: CountryDataType
+    BLR: CountryDataType
+    BEL: CountryDataType
+    BLZ: CountryDataType
+    BEN: CountryDataType
+    BMU: CountryDataType
+    BTN: CountryDataType
+    BOL: CountryDataType
+    BES: CountryDataType
+    BIH: CountryDataType
+    BWA: CountryDataType
+    BVT: CountryDataType
+    BRA: CountryDataType
+    IOT: CountryDataType
+    BRN: CountryDataType
+    BGR: CountryDataType
+    BFA: CountryDataType
+    BDI: CountryDataType
+    CPV: CountryDataType
+    KHM: CountryDataType
+    CMR: CountryDataType
+    CAN: CountryDataType
+    CYM: CountryDataType
+    CAF: CountryDataType
+    TCD: CountryDataType
+    CHL: CountryDataType
+    CHN: CountryDataType
+    CXR: CountryDataType
+    CCK: CountryDataType
+    COL: CountryDataType
+    COM: CountryDataType
+    COD: CountryDataType
+    COG: CountryDataType
+    COK: CountryDataType
+    CRI: CountryDataType
+    HRV: CountryDataType
+    CUB: CountryDataType
+    CUW: CountryDataType
+    CYP: CountryDataType
+    CZE: CountryDataType
+    CIV: CountryDataType
+    DNK: CountryDataType
+    DJI: CountryDataType
+    DMA: CountryDataType
+    DOM: CountryDataType
+    ECU: CountryDataType
+    EGY: CountryDataType
+    SLV: CountryDataType
+    GNQ: CountryDataType
+    ERI: CountryDataType
+    EST: CountryDataType
+    SWZ: CountryDataType
+    ETH: CountryDataType
+    FLK: CountryDataType
+    FRO: CountryDataType
+    FJI: CountryDataType
+    FIN: CountryDataType
+    FRA: CountryDataType
+    GUF: CountryDataType
+    PYF: CountryDataType
+    ATF: CountryDataType
+    GAB: CountryDataType
+    GMB: CountryDataType
+    GEO: CountryDataType
+    DEU: CountryDataType
+    GHA: CountryDataType
+    GIB: CountryDataType
+    GRC: CountryDataType
+    GRL: CountryDataType
+    GRD: CountryDataType
+    GLP: CountryDataType
+    GUM: CountryDataType
+    GTM: CountryDataType
+    GGY: CountryDataType
+    GIN: CountryDataType
+    GNB: CountryDataType
+    GUY: CountryDataType
+    HTI: CountryDataType
+    HMD: CountryDataType
+    VAT: CountryDataType
+    HND: CountryDataType
+    HKG: CountryDataType
+    HUN: CountryDataType
+    ISL: CountryDataType
+    IND: CountryDataType
+    IDN: CountryDataType
+    IRN: CountryDataType
+    IRQ: CountryDataType
+    IRL: CountryDataType
+    IMN: CountryDataType
+    ISR: CountryDataType
+    ITA: CountryDataType
+    JAM: CountryDataType
+    JPN: CountryDataType
+    JEY: CountryDataType
+    JOR: CountryDataType
+    KAZ: CountryDataType
+    KEN: CountryDataType
+    KIR: CountryDataType
+    PRK: CountryDataType
+    KOR: CountryDataType
+    KWT: CountryDataType
+    KGZ: CountryDataType
+    LAO: CountryDataType
+    LVA: CountryDataType
+    LBN: CountryDataType
+    LSO: CountryDataType
+    LBR: CountryDataType
+    LBY: CountryDataType
+    LIE: CountryDataType
+    LTU: CountryDataType
+    LUX: CountryDataType
+    MAC: CountryDataType
+    MDG: CountryDataType
+    MWI: CountryDataType
+    MYS: CountryDataType
+    MDV: CountryDataType
+    MLI: CountryDataType
+    MLT: CountryDataType
+    MHL: CountryDataType
+    MTQ: CountryDataType
+    MRT: CountryDataType
+    MUS: CountryDataType
+    MYT: CountryDataType
+    MEX: CountryDataType
+    FSM: CountryDataType
+    MDA: CountryDataType
+    MCO: CountryDataType
+    MNG: CountryDataType
+    MNE: CountryDataType
+    MSR: CountryDataType
+    MAR: CountryDataType
+    MOZ: CountryDataType
+    MMR: CountryDataType
+    NAM: CountryDataType
+    NRU: CountryDataType
+    NPL: CountryDataType
+    NLD: CountryDataType
+    NCL: CountryDataType
+    NZL: CountryDataType
+    NIC: CountryDataType
+    NER: CountryDataType
+    NGA: CountryDataType
+    NIU: CountryDataType
+    NFK: CountryDataType
+    MNP: CountryDataType
+    NOR: CountryDataType
+    OMN: CountryDataType
+    PAK: CountryDataType
+    PLW: CountryDataType
+    PSE: CountryDataType
+    PAN: CountryDataType
+    PNG: CountryDataType
+    PRY: CountryDataType
+    PER: CountryDataType
+    PHL: CountryDataType
+    PCN: CountryDataType
+    POL: CountryDataType
+    PRT: CountryDataType
+    PRI: CountryDataType
+    QAT: CountryDataType
+    MKD: CountryDataType
+    ROU: CountryDataType
+    RUS: CountryDataType
+    RWA: CountryDataType
+    REU: CountryDataType
+    BLM: CountryDataType
+    SHN: CountryDataType
+    KNA: CountryDataType
+    LCA: CountryDataType
+    MAF: CountryDataType
+    SPM: CountryDataType
+    VCT: CountryDataType
+    WSM: CountryDataType
+    SMR: CountryDataType
+    STP: CountryDataType
+    SAU: CountryDataType
+    SEN: CountryDataType
+    SRB: CountryDataType
+    SYC: CountryDataType
+    SLE: CountryDataType
+    SGP: CountryDataType
+    SXM: CountryDataType
+    SVK: CountryDataType
+    SVN: CountryDataType
+    SLB: CountryDataType
+    SOM: CountryDataType
+    ZAF: CountryDataType
+    SGS: CountryDataType
+    SSD: CountryDataType
+    ESP: CountryDataType
+    LKA: CountryDataType
+    SDN: CountryDataType
+    SUR: CountryDataType
+    SJM: CountryDataType
+    SWE: CountryDataType
+    CHE: CountryDataType
+    SYR: CountryDataType
+    TWN: CountryDataType
+    TJK: CountryDataType
+    TZA: CountryDataType
+    THA: CountryDataType
+    TLS: CountryDataType
+    TGO: CountryDataType
+    TKL: CountryDataType
+    TON: CountryDataType
+    TTO: CountryDataType
+    TUN: CountryDataType
+    TUR: CountryDataType
+    TKM: CountryDataType
+    TCA: CountryDataType
+    TUV: CountryDataType
+    UGA: CountryDataType
+    UKR: CountryDataType
+    ARE: CountryDataType
+    GBR: CountryDataType
+    UMI: CountryDataType
+    USA: CountryDataType
+    URY: CountryDataType
+    UZB: CountryDataType
+    VUT: CountryDataType
+    VEN: CountryDataType
+    VNM: CountryDataType
+    VGB: CountryDataType
+    VIR: CountryDataType
+    WLF: CountryDataType
+    ESH: CountryDataType
+    YEM: CountryDataType
+    ZMB: CountryDataType
+    ZWE: CountryDataType
+    ALA: CountryDataType
+
+
+CountryIndexType = TypeVar("CountryIndexType")
+
+
+def load_countries(
+    locale: str = "en",
+    data_cls: Type[CountryIndexType] = FullCountryIndex[CountryData],
+) -> CountryIndexType:
+    kwargs = {}
+    print(".....load countries, type(data_cls)=", type(data_cls))
+    for fld in fields(data_cls):
+        kwargs[fld.name] = load_country(fld.name, locale=locale)
+
+    return data_cls(**kwargs)
+
+
+@dataclass(frozen=True)
+class MyIndex:
+    USA: CustomCountryData
+    CAN: CustomCountryData
+
+
+# load_countries()
+
+
+def __reload_countries():
+    global __countries
+    __countries = load_countries(data_cls=FullCountryIndex[CountryData])
+
+
+__reload_countries()
+default_dataloader.register_reload_callback(__reload_countries)

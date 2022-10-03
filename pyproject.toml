@@ -5,9 +5,10 @@ pythonpath = ["src"]
 version = { source = 'file', path = "src/countries/__version__.py" }
 
 [tool.pdm.build]
-package-dir = "src/countries"
+package-dir = "src"
 includes = ["src/countries/**/*.py", "src/countries/database"]
-
+excludes = ["src/countries/database/.git"]
+source-includes = ["tests/**/*.py"]
 
 [[tool.pdm.source]]
 url = "https://pypi.org/simple"

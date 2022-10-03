@@ -12,12 +12,6 @@ class CountryCode:
     numeric_code: str
 
 
-@dataclass(frozen=True)
-class Property:
-    country_code: str  # alpha-3 code
-    key: str
-
-
 class DataLoader:
     class OverrideLevel:
         """
@@ -39,12 +33,15 @@ class DataLoader:
     def __init__(self, data_dir: Path = DEFAULT_DATA_DIR) -> None:
         self.databases = []  # [ (Path, OverrideLevel) ]
         self.countries = {}  # { code: CountryCode }
-        self.files = {}  # { field_name: { locale: file } }
         self.dat = {}  # { field_name: { locale: { alpha3_code: value } } }
-        self.merge_database(data_dir)
+        self.reload_callbacks = []
+        self.merge_database(data_dir, reload=False)
 
     def merge_database(
-        self, data_dir: Path, override_level: OverrideLevel = OverrideLevel.ITEM
+        self,
+        data_dir: Path,
+        override_level: OverrideLevel = OverrideLevel.ITEM,
+        reload=True,
     ) -> None:
         """
         Merge a new database into the data loader.
@@ -55,6 +52,39 @@ class DataLoader:
         if data_dir in self.databases:
             raise ValueError(f"Database {data_dir} already loaded")
         self.__load_database(data_dir, override_level)
+        if reload is True:
+            self.__reload()
+
+    def register_reload_callback(self, callback: callable) -> None:
+        """Register a callback to be called when the database is reloaded."""
+        self.reload_callbacks.append(callback)
+
+    def lookup(self, country_code: str, attr: str, locale: str = "en") -> Optional[str]:
+        """Lookup a country property value from the database.
+
+        Args:
+            country_code: alpha-3 code of the country.
+            attr: name of the property.
+            locale: locale code, e.g. "en", "de", "fr", etc.
+
+        Returns:
+            The value of the property, or None if not found.
+        """
+        locale_data = self.dat.get(attr)
+        if locale_data is None:
+            return None
+        country_data = locale_data.get(locale)
+        if country_data is None:
+            return None
+        return country_data.get(country_code)
+
+    def lookup_country_code(self, code: str) -> Optional["CountryCode"]:
+        """Lookup country code by alpha-3 code, alpha-2 code, or numeric code."""
+        return self.countries.get(code)
+
+    def __reload(self) -> None:
+        for callback in self.reload_callbacks:
+            callback()
 
     def __load_database(self, data_dir: Path, override_level: OverrideLevel) -> None:
         if not self.countries:
@@ -65,15 +95,6 @@ class DataLoader:
                 self.__load_data_file(field_name, locale, file, override_level)
         self.databases.append((data_dir, override_level))
 
-    def lookup(self, country_code: str, key: str, locale: str = "en") -> Optional[str]:
-        """Lookup a property value with specified locale."""
-        locale_data = self.dat.get(key, {})
-        return locale_data.get(locale, {}).get(country_code, None)
-
-    def lookup_country_code(self, code: str) -> Optional["CountryCode"]:
-        """Lookup country code by alpha-3 code, alpha-2 code, or numeric code."""
-        return self.countries.get(code)
-
     def __load_country_codes(self, data_dir: Path) -> None:
         with open(data_dir / "codes.tsv") as f:
             for line in f:
@@ -83,8 +104,8 @@ class DataLoader:
                     alpha3_code=alpha3_code,
                     numeric_code=numeric_code,
                 )
-                self.countries[alpha3_code] = code
                 self.countries[alpha2_code] = code
+                self.countries[alpha3_code] = code
                 self.countries[numeric_code] = code
 
     def __build_data_file_index(self, data_dir: Path) -> dict:
@@ -105,11 +126,6 @@ class DataLoader:
     def __load_data_file(
         self, field_name: str, locale: str, file: Path, override_level: OverrideLevel
     ) -> None:
-        # update self.files
-        if field_name not in self.files:
-            self.files[field_name] = {}
-        self.files[field_name][locale] = file
-
         if field_name not in self.dat or override_level == self.OverrideLevel.FIELD:
             self.dat[field_name] = {}
 
@@ -121,5 +137,5 @@ class DataLoader:
 
         with open(file) as f:
             for line in f:
-                alpha2_code, value = line.strip().split("\t")
-                self.dat[field_name][locale][alpha2_code] = value
+                alpha3_code, value = line.strip().split("\t")
+                self.dat[field_name][locale][alpha3_code] = value
