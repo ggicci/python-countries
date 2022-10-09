@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
-
-DEFAULT_DATA_DIR = Path(__file__).parent / "database"
+from typing import ClassVar, Optional
 
 
 @dataclass(frozen=True)
@@ -13,12 +11,14 @@ class CountryCode:
 
 
 class DataLoader:
+    DEFAULT_DATA_DIR: ClassVar[Path] = Path(__file__).parent / "database"
+
     class OverrideLevel:
         """
         Override level for merging databases.
 
         {
-            field_name: { // <-- FIELD level
+            field_name: {
                 locale: { // <-- LOCALE level
                     country_code: value // ITEM level
                 }
@@ -26,9 +26,8 @@ class DataLoader:
         }
         """
 
-        FIELD = 1
-        LOCALE = 2
-        ITEM = 3
+        ITEM = 0
+        LOCALE = 1
 
     def __init__(self, data_dir: Path = DEFAULT_DATA_DIR) -> None:
         self.databases = []  # [ (Path, OverrideLevel) ]
@@ -59,28 +58,29 @@ class DataLoader:
         """Register a callback to be called when the database is reloaded."""
         self.reload_callbacks.append(callback)
 
-    def lookup(self, country_code: str, attr: str, locale: str = "en") -> Optional[str]:
+    def lookup(self, country_code: str, name: str, locale: str = "en") -> Optional[str]:
         """Lookup a country property value from the database.
 
         Args:
             country_code: alpha-3 code of the country.
-            attr: name of the property.
+            name: name of the property.
             locale: locale code, e.g. "en", "de", "fr", etc.
 
         Returns:
             The value of the property, or None if not found.
         """
-        locale_data = self.dat.get(attr)
-        if locale_data is None:
-            return None
-        country_data = locale_data.get(locale)
-        if country_data is None:
-            return None
-        return country_data.get(country_code)
+        return self.dat.get(name, {}).get(locale, {}).get(country_code)
 
-    def lookup_country_code(self, code: str) -> Optional["CountryCode"]:
-        """Lookup country code by alpha-3 code, alpha-2 code, or numeric code."""
-        return self.countries.get(code)
+    def lookup_country_code(self, fuzzy_code: str) -> Optional["CountryCode"]:
+        """Lookup country code by fuzzy_code.
+
+        Args:
+            fuzzy_code: can be alpha-3 code, alpha-2 code, or numeric code.
+
+        Returns:
+            The country code, or None if not found.
+        """
+        return self.countries.get(fuzzy_code)
 
     def __reload(self) -> None:
         for callback in self.reload_callbacks:
@@ -126,7 +126,7 @@ class DataLoader:
     def __load_data_file(
         self, field_name: str, locale: str, file: Path, override_level: OverrideLevel
     ) -> None:
-        if field_name not in self.dat or override_level == self.OverrideLevel.FIELD:
+        if field_name not in self.dat:
             self.dat[field_name] = {}
 
         if (

@@ -1,305 +1,292 @@
 from dataclasses import dataclass, fields
 from typing import Generic, Type, TypeVar
 
-from countries.dataloader import DataLoader
-
 from .core import (
-    CountryData,
-    CountryDataType,
-    CustomCountryData,
+    CountryProperties,
+    T_CountryProperties,
     default_dataloader,
     load_country,
 )
-
-__countries: "FullCountryIndex"
-
-
-def countries() -> "FullCountryIndex[CountryData]":
-    """Get the index of all countries."""
-    return __countries
+from .dataloader import DataLoader
 
 
 @dataclass(frozen=True)
-class FullCountryIndex(Generic[CountryDataType]):
-    AFG: CountryDataType
-    ALB: CountryDataType
-    DZA: CountryDataType
-    ASM: CountryDataType
-    AND: CountryDataType
-    AGO: CountryDataType
-    AIA: CountryDataType
-    ATA: CountryDataType
-    ATG: CountryDataType
-    ARG: CountryDataType
-    ARM: CountryDataType
-    ABW: CountryDataType
-    AUS: CountryDataType
-    AUT: CountryDataType
-    AZE: CountryDataType
-    BHS: CountryDataType
-    BHR: CountryDataType
-    BGD: CountryDataType
-    BRB: CountryDataType
-    BLR: CountryDataType
-    BEL: CountryDataType
-    BLZ: CountryDataType
-    BEN: CountryDataType
-    BMU: CountryDataType
-    BTN: CountryDataType
-    BOL: CountryDataType
-    BES: CountryDataType
-    BIH: CountryDataType
-    BWA: CountryDataType
-    BVT: CountryDataType
-    BRA: CountryDataType
-    IOT: CountryDataType
-    BRN: CountryDataType
-    BGR: CountryDataType
-    BFA: CountryDataType
-    BDI: CountryDataType
-    CPV: CountryDataType
-    KHM: CountryDataType
-    CMR: CountryDataType
-    CAN: CountryDataType
-    CYM: CountryDataType
-    CAF: CountryDataType
-    TCD: CountryDataType
-    CHL: CountryDataType
-    CHN: CountryDataType
-    CXR: CountryDataType
-    CCK: CountryDataType
-    COL: CountryDataType
-    COM: CountryDataType
-    COD: CountryDataType
-    COG: CountryDataType
-    COK: CountryDataType
-    CRI: CountryDataType
-    HRV: CountryDataType
-    CUB: CountryDataType
-    CUW: CountryDataType
-    CYP: CountryDataType
-    CZE: CountryDataType
-    CIV: CountryDataType
-    DNK: CountryDataType
-    DJI: CountryDataType
-    DMA: CountryDataType
-    DOM: CountryDataType
-    ECU: CountryDataType
-    EGY: CountryDataType
-    SLV: CountryDataType
-    GNQ: CountryDataType
-    ERI: CountryDataType
-    EST: CountryDataType
-    SWZ: CountryDataType
-    ETH: CountryDataType
-    FLK: CountryDataType
-    FRO: CountryDataType
-    FJI: CountryDataType
-    FIN: CountryDataType
-    FRA: CountryDataType
-    GUF: CountryDataType
-    PYF: CountryDataType
-    ATF: CountryDataType
-    GAB: CountryDataType
-    GMB: CountryDataType
-    GEO: CountryDataType
-    DEU: CountryDataType
-    GHA: CountryDataType
-    GIB: CountryDataType
-    GRC: CountryDataType
-    GRL: CountryDataType
-    GRD: CountryDataType
-    GLP: CountryDataType
-    GUM: CountryDataType
-    GTM: CountryDataType
-    GGY: CountryDataType
-    GIN: CountryDataType
-    GNB: CountryDataType
-    GUY: CountryDataType
-    HTI: CountryDataType
-    HMD: CountryDataType
-    VAT: CountryDataType
-    HND: CountryDataType
-    HKG: CountryDataType
-    HUN: CountryDataType
-    ISL: CountryDataType
-    IND: CountryDataType
-    IDN: CountryDataType
-    IRN: CountryDataType
-    IRQ: CountryDataType
-    IRL: CountryDataType
-    IMN: CountryDataType
-    ISR: CountryDataType
-    ITA: CountryDataType
-    JAM: CountryDataType
-    JPN: CountryDataType
-    JEY: CountryDataType
-    JOR: CountryDataType
-    KAZ: CountryDataType
-    KEN: CountryDataType
-    KIR: CountryDataType
-    PRK: CountryDataType
-    KOR: CountryDataType
-    KWT: CountryDataType
-    KGZ: CountryDataType
-    LAO: CountryDataType
-    LVA: CountryDataType
-    LBN: CountryDataType
-    LSO: CountryDataType
-    LBR: CountryDataType
-    LBY: CountryDataType
-    LIE: CountryDataType
-    LTU: CountryDataType
-    LUX: CountryDataType
-    MAC: CountryDataType
-    MDG: CountryDataType
-    MWI: CountryDataType
-    MYS: CountryDataType
-    MDV: CountryDataType
-    MLI: CountryDataType
-    MLT: CountryDataType
-    MHL: CountryDataType
-    MTQ: CountryDataType
-    MRT: CountryDataType
-    MUS: CountryDataType
-    MYT: CountryDataType
-    MEX: CountryDataType
-    FSM: CountryDataType
-    MDA: CountryDataType
-    MCO: CountryDataType
-    MNG: CountryDataType
-    MNE: CountryDataType
-    MSR: CountryDataType
-    MAR: CountryDataType
-    MOZ: CountryDataType
-    MMR: CountryDataType
-    NAM: CountryDataType
-    NRU: CountryDataType
-    NPL: CountryDataType
-    NLD: CountryDataType
-    NCL: CountryDataType
-    NZL: CountryDataType
-    NIC: CountryDataType
-    NER: CountryDataType
-    NGA: CountryDataType
-    NIU: CountryDataType
-    NFK: CountryDataType
-    MNP: CountryDataType
-    NOR: CountryDataType
-    OMN: CountryDataType
-    PAK: CountryDataType
-    PLW: CountryDataType
-    PSE: CountryDataType
-    PAN: CountryDataType
-    PNG: CountryDataType
-    PRY: CountryDataType
-    PER: CountryDataType
-    PHL: CountryDataType
-    PCN: CountryDataType
-    POL: CountryDataType
-    PRT: CountryDataType
-    PRI: CountryDataType
-    QAT: CountryDataType
-    MKD: CountryDataType
-    ROU: CountryDataType
-    RUS: CountryDataType
-    RWA: CountryDataType
-    REU: CountryDataType
-    BLM: CountryDataType
-    SHN: CountryDataType
-    KNA: CountryDataType
-    LCA: CountryDataType
-    MAF: CountryDataType
-    SPM: CountryDataType
-    VCT: CountryDataType
-    WSM: CountryDataType
-    SMR: CountryDataType
-    STP: CountryDataType
-    SAU: CountryDataType
-    SEN: CountryDataType
-    SRB: CountryDataType
-    SYC: CountryDataType
-    SLE: CountryDataType
-    SGP: CountryDataType
-    SXM: CountryDataType
-    SVK: CountryDataType
-    SVN: CountryDataType
-    SLB: CountryDataType
-    SOM: CountryDataType
-    ZAF: CountryDataType
-    SGS: CountryDataType
-    SSD: CountryDataType
-    ESP: CountryDataType
-    LKA: CountryDataType
-    SDN: CountryDataType
-    SUR: CountryDataType
-    SJM: CountryDataType
-    SWE: CountryDataType
-    CHE: CountryDataType
-    SYR: CountryDataType
-    TWN: CountryDataType
-    TJK: CountryDataType
-    TZA: CountryDataType
-    THA: CountryDataType
-    TLS: CountryDataType
-    TGO: CountryDataType
-    TKL: CountryDataType
-    TON: CountryDataType
-    TTO: CountryDataType
-    TUN: CountryDataType
-    TUR: CountryDataType
-    TKM: CountryDataType
-    TCA: CountryDataType
-    TUV: CountryDataType
-    UGA: CountryDataType
-    UKR: CountryDataType
-    ARE: CountryDataType
-    GBR: CountryDataType
-    UMI: CountryDataType
-    USA: CountryDataType
-    URY: CountryDataType
-    UZB: CountryDataType
-    VUT: CountryDataType
-    VEN: CountryDataType
-    VNM: CountryDataType
-    VGB: CountryDataType
-    VIR: CountryDataType
-    WLF: CountryDataType
-    ESH: CountryDataType
-    YEM: CountryDataType
-    ZMB: CountryDataType
-    ZWE: CountryDataType
-    ALA: CountryDataType
+class FullCountryIndex(Generic[T_CountryProperties]):
+    AFG: T_CountryProperties
+    ALB: T_CountryProperties
+    DZA: T_CountryProperties
+    ASM: T_CountryProperties
+    AND: T_CountryProperties
+    AGO: T_CountryProperties
+    AIA: T_CountryProperties
+    ATA: T_CountryProperties
+    ATG: T_CountryProperties
+    ARG: T_CountryProperties
+    ARM: T_CountryProperties
+    ABW: T_CountryProperties
+    AUS: T_CountryProperties
+    AUT: T_CountryProperties
+    AZE: T_CountryProperties
+    BHS: T_CountryProperties
+    BHR: T_CountryProperties
+    BGD: T_CountryProperties
+    BRB: T_CountryProperties
+    BLR: T_CountryProperties
+    BEL: T_CountryProperties
+    BLZ: T_CountryProperties
+    BEN: T_CountryProperties
+    BMU: T_CountryProperties
+    BTN: T_CountryProperties
+    BOL: T_CountryProperties
+    BES: T_CountryProperties
+    BIH: T_CountryProperties
+    BWA: T_CountryProperties
+    BVT: T_CountryProperties
+    BRA: T_CountryProperties
+    IOT: T_CountryProperties
+    BRN: T_CountryProperties
+    BGR: T_CountryProperties
+    BFA: T_CountryProperties
+    BDI: T_CountryProperties
+    CPV: T_CountryProperties
+    KHM: T_CountryProperties
+    CMR: T_CountryProperties
+    CAN: T_CountryProperties
+    CYM: T_CountryProperties
+    CAF: T_CountryProperties
+    TCD: T_CountryProperties
+    CHL: T_CountryProperties
+    CHN: T_CountryProperties
+    CXR: T_CountryProperties
+    CCK: T_CountryProperties
+    COL: T_CountryProperties
+    COM: T_CountryProperties
+    COD: T_CountryProperties
+    COG: T_CountryProperties
+    COK: T_CountryProperties
+    CRI: T_CountryProperties
+    HRV: T_CountryProperties
+    CUB: T_CountryProperties
+    CUW: T_CountryProperties
+    CYP: T_CountryProperties
+    CZE: T_CountryProperties
+    CIV: T_CountryProperties
+    DNK: T_CountryProperties
+    DJI: T_CountryProperties
+    DMA: T_CountryProperties
+    DOM: T_CountryProperties
+    ECU: T_CountryProperties
+    EGY: T_CountryProperties
+    SLV: T_CountryProperties
+    GNQ: T_CountryProperties
+    ERI: T_CountryProperties
+    EST: T_CountryProperties
+    SWZ: T_CountryProperties
+    ETH: T_CountryProperties
+    FLK: T_CountryProperties
+    FRO: T_CountryProperties
+    FJI: T_CountryProperties
+    FIN: T_CountryProperties
+    FRA: T_CountryProperties
+    GUF: T_CountryProperties
+    PYF: T_CountryProperties
+    ATF: T_CountryProperties
+    GAB: T_CountryProperties
+    GMB: T_CountryProperties
+    GEO: T_CountryProperties
+    DEU: T_CountryProperties
+    GHA: T_CountryProperties
+    GIB: T_CountryProperties
+    GRC: T_CountryProperties
+    GRL: T_CountryProperties
+    GRD: T_CountryProperties
+    GLP: T_CountryProperties
+    GUM: T_CountryProperties
+    GTM: T_CountryProperties
+    GGY: T_CountryProperties
+    GIN: T_CountryProperties
+    GNB: T_CountryProperties
+    GUY: T_CountryProperties
+    HTI: T_CountryProperties
+    HMD: T_CountryProperties
+    VAT: T_CountryProperties
+    HND: T_CountryProperties
+    HKG: T_CountryProperties
+    HUN: T_CountryProperties
+    ISL: T_CountryProperties
+    IND: T_CountryProperties
+    IDN: T_CountryProperties
+    IRN: T_CountryProperties
+    IRQ: T_CountryProperties
+    IRL: T_CountryProperties
+    IMN: T_CountryProperties
+    ISR: T_CountryProperties
+    ITA: T_CountryProperties
+    JAM: T_CountryProperties
+    JPN: T_CountryProperties
+    JEY: T_CountryProperties
+    JOR: T_CountryProperties
+    KAZ: T_CountryProperties
+    KEN: T_CountryProperties
+    KIR: T_CountryProperties
+    PRK: T_CountryProperties
+    KOR: T_CountryProperties
+    KWT: T_CountryProperties
+    KGZ: T_CountryProperties
+    LAO: T_CountryProperties
+    LVA: T_CountryProperties
+    LBN: T_CountryProperties
+    LSO: T_CountryProperties
+    LBR: T_CountryProperties
+    LBY: T_CountryProperties
+    LIE: T_CountryProperties
+    LTU: T_CountryProperties
+    LUX: T_CountryProperties
+    MAC: T_CountryProperties
+    MDG: T_CountryProperties
+    MWI: T_CountryProperties
+    MYS: T_CountryProperties
+    MDV: T_CountryProperties
+    MLI: T_CountryProperties
+    MLT: T_CountryProperties
+    MHL: T_CountryProperties
+    MTQ: T_CountryProperties
+    MRT: T_CountryProperties
+    MUS: T_CountryProperties
+    MYT: T_CountryProperties
+    MEX: T_CountryProperties
+    FSM: T_CountryProperties
+    MDA: T_CountryProperties
+    MCO: T_CountryProperties
+    MNG: T_CountryProperties
+    MNE: T_CountryProperties
+    MSR: T_CountryProperties
+    MAR: T_CountryProperties
+    MOZ: T_CountryProperties
+    MMR: T_CountryProperties
+    NAM: T_CountryProperties
+    NRU: T_CountryProperties
+    NPL: T_CountryProperties
+    NLD: T_CountryProperties
+    NCL: T_CountryProperties
+    NZL: T_CountryProperties
+    NIC: T_CountryProperties
+    NER: T_CountryProperties
+    NGA: T_CountryProperties
+    NIU: T_CountryProperties
+    NFK: T_CountryProperties
+    MNP: T_CountryProperties
+    NOR: T_CountryProperties
+    OMN: T_CountryProperties
+    PAK: T_CountryProperties
+    PLW: T_CountryProperties
+    PSE: T_CountryProperties
+    PAN: T_CountryProperties
+    PNG: T_CountryProperties
+    PRY: T_CountryProperties
+    PER: T_CountryProperties
+    PHL: T_CountryProperties
+    PCN: T_CountryProperties
+    POL: T_CountryProperties
+    PRT: T_CountryProperties
+    PRI: T_CountryProperties
+    QAT: T_CountryProperties
+    MKD: T_CountryProperties
+    ROU: T_CountryProperties
+    RUS: T_CountryProperties
+    RWA: T_CountryProperties
+    REU: T_CountryProperties
+    BLM: T_CountryProperties
+    SHN: T_CountryProperties
+    KNA: T_CountryProperties
+    LCA: T_CountryProperties
+    MAF: T_CountryProperties
+    SPM: T_CountryProperties
+    VCT: T_CountryProperties
+    WSM: T_CountryProperties
+    SMR: T_CountryProperties
+    STP: T_CountryProperties
+    SAU: T_CountryProperties
+    SEN: T_CountryProperties
+    SRB: T_CountryProperties
+    SYC: T_CountryProperties
+    SLE: T_CountryProperties
+    SGP: T_CountryProperties
+    SXM: T_CountryProperties
+    SVK: T_CountryProperties
+    SVN: T_CountryProperties
+    SLB: T_CountryProperties
+    SOM: T_CountryProperties
+    ZAF: T_CountryProperties
+    SGS: T_CountryProperties
+    SSD: T_CountryProperties
+    ESP: T_CountryProperties
+    LKA: T_CountryProperties
+    SDN: T_CountryProperties
+    SUR: T_CountryProperties
+    SJM: T_CountryProperties
+    SWE: T_CountryProperties
+    CHE: T_CountryProperties
+    SYR: T_CountryProperties
+    TWN: T_CountryProperties
+    TJK: T_CountryProperties
+    TZA: T_CountryProperties
+    THA: T_CountryProperties
+    TLS: T_CountryProperties
+    TGO: T_CountryProperties
+    TKL: T_CountryProperties
+    TON: T_CountryProperties
+    TTO: T_CountryProperties
+    TUN: T_CountryProperties
+    TUR: T_CountryProperties
+    TKM: T_CountryProperties
+    TCA: T_CountryProperties
+    TUV: T_CountryProperties
+    UGA: T_CountryProperties
+    UKR: T_CountryProperties
+    ARE: T_CountryProperties
+    GBR: T_CountryProperties
+    UMI: T_CountryProperties
+    USA: T_CountryProperties
+    URY: T_CountryProperties
+    UZB: T_CountryProperties
+    VUT: T_CountryProperties
+    VEN: T_CountryProperties
+    VNM: T_CountryProperties
+    VGB: T_CountryProperties
+    VIR: T_CountryProperties
+    WLF: T_CountryProperties
+    ESH: T_CountryProperties
+    YEM: T_CountryProperties
+    ZMB: T_CountryProperties
+    ZWE: T_CountryProperties
+    ALA: T_CountryProperties
 
 
-CountryIndexType = TypeVar("CountryIndexType")
+T_CountryIndex = TypeVar("T_CountryIndex", dataclass)
 
 
 def load_countries(
     locale: str = "en",
-    data_cls: Type[CountryIndexType] = FullCountryIndex[CountryData],
-) -> CountryIndexType:
+    data_cls: Type[T_CountryIndex] = FullCountryIndex[CountryProperties],
+    loader: DataLoader = default_dataloader,
+) -> T_CountryIndex:
     kwargs = {}
-    print(".....load countries, type(data_cls)=", type(data_cls))
     for fld in fields(data_cls):
-        kwargs[fld.name] = load_country(fld.name, locale=locale)
+        kwargs[fld.name] = load_country(
+            fld.name,
+            locale=locale,
+            data_cls=fld.type,
+            loader=loader,
+        )
 
     return data_cls(**kwargs)
 
 
-@dataclass(frozen=True)
-class MyIndex:
-    USA: CustomCountryData
-    CAN: CustomCountryData
+# def __reload_countries():
+#     global __countries
+#     __countries = load_countries(data_cls=FullCountryIndex[CountryData])
 
 
-# load_countries()
-
-
-def __reload_countries():
-    global __countries
-    __countries = load_countries(data_cls=FullCountryIndex[CountryData])
-
-
-__reload_countries()
-default_dataloader.register_reload_callback(__reload_countries)
+# __reload_countries()
+# default_dataloader.register_reload_callback(__reload_countries)

@@ -1,27 +1,22 @@
+from dataclasses import dataclass
 from pathlib import Path
 
-from countries.core import CountryData, load_country, merge_database
-from countries.country import countries
+import pytest
+from countries.core import (CountryPropertiesBase, Property, load_country,
+                            load_country_generic)
+from countries.dataloader import DataLoader
+
+DIR_CUSTOM = Path(__file__).parent / "custom"
 
 
-def test_CountryData():
-    can = CountryData(
-        locale="en",
-        alpha2_code="CA",
-        alpha3_code="CAN",
-        numeric_code="124",
-        name="Canada",
-    )
-
-    assert can.lookup("name") == can.name == "Canada"
+@dataclass(frozen=True)
+class CustomCountry(CountryPropertiesBase):
+    flag: Property
+    flower: Property
 
 
-def test_CountryData_to_locale():
-    can = load_country("CAN")
-    assert can.name == "Canada"
-
-    can_zh = can.to_locale("zh")
-    assert can_zh.name == "加拿大"
+class InvalidCountryProperties:
+    color: Property
 
 
 def test_load_country():
@@ -32,26 +27,43 @@ def test_load_country():
     assert can.numeric_code == "124"
     assert can.name == "Canada"
 
-    can_zh = load_country("CAN", locale="zh")
-    assert can_zh.locale == "zh"
+
+def test_load_country_by_using_alpha2_code():
+    can = load_country("CA")
+    assert can.locale == "en"
     assert can.alpha2_code == "CA"
     assert can.alpha3_code == "CAN"
     assert can.numeric_code == "124"
+    assert can.name == "Canada"
+
+
+def test_load_country_with_locale():
+    can_zh = load_country("CAN", locale="zh")
+    assert can_zh.locale == "zh"
+    assert can_zh.alpha2_code == "CA"
+    assert can_zh.alpha3_code == "CAN"
+    assert can_zh.numeric_code == "124"
     assert can_zh.name == "加拿大"
 
 
-def test_merge_database():
+def test_country_to_locale():
     can = load_country("CAN")
+    assert can.locale == "en"
     assert can.name == "Canada"
 
-    assert can.lookup("flag") == "", "flag is not loaded yet"
-    merge_database(Path(__file__).parent / "custom")
-    assert can.lookup("flag") == "🇨🇦", "flag is loaded"
+    can_zh = can.to_locale("zh")
+    assert can_zh.locale == "zh"
+    assert can_zh.name == "加拿大"
 
 
-def test_merge_database_reload():
-    assert countries().USA.name == "United States of America (the)"
-    merge_database(Path(__file__).parent / "custom", reload=False)
-    assert countries().USA.name == "United States of America (the)"
-    merge_database(Path(__file__).parent / "custom", reload=True)
-    assert countries().USA.name == "United States"
+def test_load_country_generic():
+    loader = DataLoader()
+    loader.merge_database(DIR_CUSTOM)
+    v = load_country_generic(CustomCountry, "US", loader=loader)
+    assert v.flag == "🇺🇸"
+
+
+def test_load_country_generic_with_invalid_type():
+    with pytest.raises(ValueError, match=r".+must be a frozen dataclass") as ex:
+        v = load_country_generic(InvalidCountryProperties, "US")
+        assert v is None
