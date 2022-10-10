@@ -1,3 +1,9 @@
+default: build
+
+.PHONY: build
+build:
+	pdm build
+
 test:
 	pytest -v
 

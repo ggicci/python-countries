@@ -19,7 +19,7 @@ name = "pypi"
 dev = ["pytest", "pytest-cov>=3.0.0"]
 
 [project]
-name = "python-countries"
+name = "country-database"
 description = "Country information database. Including names, capitals, currencies, etc."
 authors = [{ name = "Ggicci", email = "ggicci.t@gmail.com" }]
 dependencies = []
