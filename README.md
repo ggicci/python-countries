@@ -11,6 +11,5 @@ pip install country-database
 ## Usage
 
 ```python
-from countries.country import Country
-
+from countries import load_countries
 ```

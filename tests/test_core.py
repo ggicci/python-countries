@@ -55,5 +55,9 @@ def test_load_country_generic():
 
 def test_load_country_generic_with_invalid_type():
     with pytest.raises(ValueError, match=r".+must be a frozen dataclass") as ex:
-        v = load_country_generic(InvalidCountryProperties, "US")
-        assert v is None
+        load_country_generic(InvalidCountryProperties, "US")
+
+
+def test_load_country_with_unknown_country_code():
+    with pytest.raises(KeyError, match=r".+not found"):
+        load_country("ZZZ")

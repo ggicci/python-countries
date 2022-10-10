@@ -46,10 +46,14 @@ def test_load_countries_generic_with_generic_index_cls():
     )
     assert len(country_index.asdict()) == TOTAL_COUNTRIES
     assert country_index.CHN.flag == "🇨🇳"
+    # The `lookup` method is useful when the field is not a defined property.
+    assert country_index.CHN.lookup("flag") == "🇨🇳"
     assert country_index.USA.national_flower == "Rose"
+    assert country_index.USA.lookup("national_flower") == "Rose"
+
+    assert country_index.USA.lookup("404") == ""
 
 
 def test_load_countries_generic_with_invalid_type():
     with pytest.raises(ValueError, match=r".+must be a dataclass"):
-        v = load_countries_generic(InvalidCountryIndex)
-        assert v is None
+        load_countries_generic(InvalidCountryIndex)
