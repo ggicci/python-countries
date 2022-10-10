@@ -1,8 +1,6 @@
 from dataclasses import dataclass, fields, is_dataclass
 from typing import Type, TypeVar
 
-from attr import asdict
-
 from .dataloader import CountryCode, DataLoader
 from .property import Property
 
