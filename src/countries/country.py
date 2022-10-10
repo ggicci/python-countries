@@ -1,11 +1,11 @@
-from dataclasses import dataclass, fields
-from typing import Generic, Type, TypeVar
+from dataclasses import asdict, dataclass, fields, is_dataclass
+from typing import Dict, Generic, Type, TypeVar
 
 from .core import (
     CountryProperties,
     T_CountryProperties,
     default_dataloader,
-    load_country,
+    load_country_generic,
 )
 from .dataloader import DataLoader
 
@@ -262,25 +262,49 @@ class FullCountryIndex(Generic[T_CountryProperties]):
     ZWE: T_CountryProperties
     ALA: T_CountryProperties
 
+    def asdict(self) -> Dict[str, T_CountryProperties]:
+        return asdict(self)
 
-T_CountryIndex = TypeVar("T_CountryIndex", dataclass)
+
+T_CountryIndex = TypeVar("T_CountryIndex", bound=dataclass)
 
 
-def load_countries(
+def load_countries_generic(
+    index_cls: Type[T_CountryIndex],
     locale: str = "en",
-    data_cls: Type[T_CountryIndex] = FullCountryIndex[CountryProperties],
     loader: DataLoader = default_dataloader,
 ) -> T_CountryIndex:
+    orig_index_cls = index_cls
+    country_cls = None
+
+    # Unfold generic types.
+    if hasattr(index_cls, "__origin__"):
+        orig_index_cls = getattr(index_cls, "__origin__")
+        generic_args = getattr(index_cls, "__args__", tuple())
+        assert (
+            len(generic_args) == 1
+        ), "only generic types with 1 parameter are allowed in this context"
+        country_cls = generic_args[0]
+
+    if not is_dataclass(orig_index_cls):
+        raise ValueError(f"`{orig_index_cls}` must be a dataclass")
+
     kwargs = {}
-    for fld in fields(data_cls):
-        kwargs[fld.name] = load_country(
+    for fld in fields(orig_index_cls):
+        kwargs[fld.name] = load_country_generic(
+            country_cls or fld.type,
             fld.name,
             locale=locale,
-            data_cls=fld.type,
             loader=loader,
         )
 
-    return data_cls(**kwargs)
+    return index_cls(**kwargs)
+
+
+def load_countries(locale: str = "en", loader: DataLoader = default_dataloader):
+    return load_countries_generic(
+        FullCountryIndex[CountryProperties], locale=locale, loader=loader
+    )
 
 
 # def __reload_countries():

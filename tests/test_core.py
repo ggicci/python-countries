@@ -1,18 +1,8 @@
-from dataclasses import dataclass
-from pathlib import Path
-
 import pytest
-from countries.core import (CountryPropertiesBase, Property, load_country,
-                            load_country_generic)
+from countries.core import Property, load_country, load_country_generic
 from countries.dataloader import DataLoader
 
-DIR_CUSTOM = Path(__file__).parent / "custom"
-
-
-@dataclass(frozen=True)
-class CustomCountry(CountryPropertiesBase):
-    flag: Property
-    flower: Property
+from .helper import CUSTOM_DATA_DIR, CustomCountry
 
 
 class InvalidCountryProperties:
@@ -58,7 +48,7 @@ def test_country_to_locale():
 
 def test_load_country_generic():
     loader = DataLoader()
-    loader.merge_database(DIR_CUSTOM)
+    loader.merge_database(CUSTOM_DATA_DIR)
     v = load_country_generic(CustomCountry, "US", loader=loader)
     assert v.flag == "🇺🇸"
 

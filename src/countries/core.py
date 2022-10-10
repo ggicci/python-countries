@@ -65,7 +65,7 @@ T_CountryProperties = TypeVar("T_CountryProperties", bound=CountryPropertiesBase
 
 
 def load_country_generic(
-    data_cls: Type[T_CountryProperties],
+    country_cls: Type[T_CountryProperties],
     fuzzy_code: str,
     locale: str = "en",
     loader: DataLoader = default_dataloader,
@@ -75,7 +75,7 @@ def load_country_generic(
     Args:
         fuzzy_code: can be alpha-3 code, alpha-2 code, or numeric code.
         locale: the default locale of the property values.
-        data_cls: a dataclass representing a country with named properties.
+        country_cls: a dataclass representing a country with named properties.
         loader: the dataloader.
 
     Returns:
@@ -88,8 +88,8 @@ def load_country_generic(
     if code is None:
         raise KeyError(f"Country code `{fuzzy_code}` not found")
 
-    if not is_dataclass(data_cls):
-        raise ValueError(f"data_cls `{data_cls}` must be a frozen dataclass")
+    if not is_dataclass(country_cls):
+        raise ValueError(f"country_cls `{country_cls}` must be a frozen dataclass")
 
     # memo_key = (alpha3_code, locale)
     # if memo_key in __memo:
@@ -102,7 +102,7 @@ def load_country_generic(
         "alpha3_code": code.alpha3_code,
         "numeric_code": code.numeric_code,
     }
-    for fld in fields(data_cls):
+    for fld in fields(country_cls):
         if fld.name in kwargs:
             continue
 
@@ -113,7 +113,7 @@ def load_country_generic(
             locale=locale,
         )
 
-    data = data_cls(**kwargs)
+    data = country_cls(**kwargs)
     # __memo[memo_key] = data
     return data
 

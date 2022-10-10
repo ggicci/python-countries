@@ -88,15 +88,16 @@ class DataLoader:
 
     def __load_database(self, data_dir: Path, override_level: OverrideLevel) -> None:
         if not self.countries:
-            self.__load_country_codes(data_dir)  # only load countries once
+            self.__load_country_codes()  # only load countries once
         files = self.__build_data_file_index(data_dir)
         for field_name, locale_files in files.items():
             for locale, file in locale_files.items():
                 self.__load_data_file(field_name, locale, file, override_level)
         self.databases.append((data_dir, override_level))
 
-    def __load_country_codes(self, data_dir: Path) -> None:
-        with open(data_dir / "codes.tsv") as f:
+    def __load_country_codes(self) -> None:
+        """Load codes.tsv from the default database."""
+        with open(self.DEFAULT_DATA_DIR / "codes.tsv") as f:
             for line in f:
                 alpha2_code, alpha3_code, numeric_code = line.strip().split("\t")
                 code = CountryCode(

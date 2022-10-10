@@ -2,7 +2,7 @@ from pathlib import Path
 
 from countries.dataloader import DataLoader
 
-DIR_CUSTOM = Path(__file__).parent / "custom"
+from .helper import CUSTOM_DATA_DIR
 
 
 def test_DataLoader():
@@ -38,7 +38,7 @@ def test_DataLoader_merge_database():
 
 def test_DataLoader_merge_database_OverrideLevel_LOCALE():
     dl = DataLoader()
-    dl.merge_database(DIR_CUSTOM, override_level=DataLoader.OverrideLevel.LOCALE)
+    dl.merge_database(CUSTOM_DATA_DIR, override_level=DataLoader.OverrideLevel.LOCALE)
     assert dl.lookup("USA", "name") == "United States"
     assert dl.lookup("GBR", "name") == "United Kingdom"
     assert dl.lookup("CHN", "name") is None
