@@ -1,13 +1,9 @@
-from dataclasses import asdict, dataclass, fields, is_dataclass
-from typing import Dict, Generic, Type, TypeVar
+from dataclasses import asdict, dataclass
+from typing import Dict, Generic
 
-from .core import (
-    CountryProperties,
-    T_CountryProperties,
-    default_dataloader,
-    load_country_generic,
-)
-from .dataloader import DataLoader
+from .dataloader import DataLoader, default_dataloader
+from .generated import CountryProperties
+from .generics import T_CountryProperties, load_countries_generic, load_country_generic
 
 
 @dataclass(frozen=True)
@@ -266,39 +262,12 @@ class FullCountryIndex(Generic[T_CountryProperties]):
         return asdict(self)
 
 
-T_CountryIndex = TypeVar("T_CountryIndex", bound=dataclass)
-
-
-def load_countries_generic(
-    index_cls: Type[T_CountryIndex],
-    locale: str = "en",
-    loader: DataLoader = default_dataloader,
-) -> T_CountryIndex:
-    orig_index_cls = index_cls
-    country_cls = None
-
-    # Unfold generic types.
-    if hasattr(index_cls, "__origin__"):
-        orig_index_cls = getattr(index_cls, "__origin__")
-        generic_args = getattr(index_cls, "__args__", tuple())
-        assert (
-            len(generic_args) == 1
-        ), "only generic types with 1 parameter are allowed in this context"
-        country_cls = generic_args[0]
-
-    if not is_dataclass(orig_index_cls):
-        raise ValueError(f"`{orig_index_cls}` must be a dataclass")
-
-    kwargs = {}
-    for fld in fields(orig_index_cls):
-        kwargs[fld.name] = load_country_generic(
-            country_cls or fld.type,
-            fld.name,
-            locale=locale,
-            loader=loader,
-        )
-
-    return index_cls(**kwargs)
+def load_country(
+    fuzzy_code: str, locale: str = "en", loader: DataLoader = default_dataloader
+) -> CountryProperties:
+    return load_country_generic(
+        CountryProperties, fuzzy_code, locale=locale, loader=loader
+    )
 
 
 def load_countries(locale: str = "en", loader: DataLoader = default_dataloader):

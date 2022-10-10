@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from countries.dataloader import DataLoader
+import pytest
+from country_database import DataLoader
 
 from .helper import CUSTOM_DATA_DIR
 
@@ -55,3 +56,11 @@ def test_DataLoader_merge_database_reload():
     dl.register_reload_callback(mock_reload_callback)
     dl.merge_database(Path(__file__).parent / "custom")
     assert called, "reload callback should be called"
+
+
+def test_DataLoader_merge_database_duplicate_path():
+    dl = DataLoader()
+    dl.merge_database(CUSTOM_DATA_DIR)
+
+    with pytest.raises(ValueError, match=r".+already loaded"):
+        dl.merge_database(CUSTOM_DATA_DIR)

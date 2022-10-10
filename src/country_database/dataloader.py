@@ -48,7 +48,7 @@ class DataLoader:
         Raises:
             ValueError: if the database is already loaded or the database is invalid.
         """
-        if data_dir in self.databases:
+        if any(x[0] == data_dir for x in self.databases):
             raise ValueError(f"Database {data_dir} already loaded")
         self.__load_database(data_dir, override_level)
         if reload is True:
@@ -140,3 +140,7 @@ class DataLoader:
             for line in f:
                 alpha3_code, value = line.strip().split("\t")
                 self.dat[field_name][locale][alpha3_code] = value
+
+
+# the builtin dataloader with the default database loaded
+default_dataloader = DataLoader()

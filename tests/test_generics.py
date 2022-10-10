@@ -1,37 +1,39 @@
 import pytest
-from countries.country import FullCountryIndex, load_countries, load_countries_generic
-from countries.dataloader import DataLoader
+from country_database import (
+    DataLoader,
+    FullCountryIndex,
+    Property,
+    load_countries_generic,
+    load_country,
+    load_country_generic,
+)
 
 from .helper import CUSTOM_DATA_DIR, TOTAL_COUNTRIES, CustomCountry, CustomCountryIndex
+
+
+class InvalidCountryProperties:
+    color: Property
 
 
 class InvalidCountryIndex:
     USA: CustomCountry
 
 
-def test_load_countries():
-    country_index = load_countries()
-
-    assert country_index.CHN.locale == "en"
-    assert country_index.CHN.name == "China"
-    assert country_index.CHN.name.to_locale("zh") == "中国"
-
-    assert country_index.CAN.locale == "en"
-    assert country_index.CAN.name == "Canada"
-    assert country_index.CAN.name.to_locale("zh") == "加拿大"
-    assert country_index.CAN.name.to_locale("invalid-translation") == ""
+def test_load_country_generic():
+    loader = DataLoader()
+    loader.merge_database(CUSTOM_DATA_DIR)
+    v = load_country_generic(CustomCountry, "US", loader=loader)
+    assert v.flag == "🇺🇸"
 
 
-def test_load_countries_with_locale():
-    country_index = load_countries(locale="zh")
+def test_load_country_generic_with_invalid_type():
+    with pytest.raises(ValueError, match=r".+must be a frozen dataclass") as ex:
+        load_country_generic(InvalidCountryProperties, "US")
 
-    assert country_index.CHN.locale == "zh"
-    assert country_index.CHN.name == "中国"
-    assert country_index.CHN.name.to_locale("en") == "China"
 
-    assert country_index.CAN.locale == "zh"
-    assert country_index.CAN.name == "加拿大"
-    assert country_index.CAN.name.to_locale("en") == "Canada"
+def test_load_country_with_unknown_country_code():
+    with pytest.raises(KeyError, match=r".+not found"):
+        load_country("ZZZ")
 
 
 def test_load_countries_generic_with_custom_index_cls():

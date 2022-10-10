@@ -1,3 +1,3 @@
 [submodule "countries"]
-	path = src/countries/database
+	path = src/country_database/database
 	url = https://github.com/ggicci/countries.git

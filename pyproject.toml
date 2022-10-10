@@ -2,12 +2,12 @@
 pythonpath = ["src"]
 
 [tool.pdm]
-version = { source = 'file', path = "src/countries/__version__.py" }
+version = { source = 'file', path = "src/country_database/__version__.py" }
 
 [tool.pdm.build]
 package-dir = "src"
-includes = ["src/countries/**/*.py", "src/countries/database"]
-excludes = ["src/countries/database/.git"]
+includes = ["src/country_database/**/*.py", "src/country_database/database"]
+excludes = ["src/country_database/database/.git"]
 source-includes = ["tests/**/*.py"]
 
 [[tool.pdm.source]]
