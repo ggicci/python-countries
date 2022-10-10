@@ -1,6 +1,8 @@
 from dataclasses import dataclass, fields, is_dataclass
 from typing import Type, TypeVar
 
+from attr import asdict
+
 from .dataloader import CountryCode, DataLoader
 from .property import Property
 
@@ -13,23 +15,9 @@ class CountryPropertiesBase(CountryCode):
     _dataloader: "DataLoader"
     locale: str
 
-    def __init__(
-        self,
-        _dataloader: DataLoader,
-        alpha2_code: str,
-        alpha3_code: str,
-        numeric_code: str,
-        locale: str,
-    ):
-        super().__init__(
-            alpha2_code=alpha2_code, alpha3_code=alpha3_code, numeric_code=numeric_code
-        )
-        # self.locale = locale
-        object.__setattr__(self, "_dataloader", _dataloader)
-        object.__setattr__(self, "locale", locale)
-
-        # trick: hide from the asdict() output
-        del self.__dataclass_fields__["_dataloader"]
+    def __post_init__(self):
+        # trick: hide "_dataloader" from asdict output
+        self.__dataclass_fields__.pop("_dataloader", None)
 
     def lookup(self, name: str) -> Property:
         """Lookup a property value of the current country, with default locale `en`.

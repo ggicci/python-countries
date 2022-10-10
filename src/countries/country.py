@@ -305,12 +305,3 @@ def load_countries(locale: str = "en", loader: DataLoader = default_dataloader):
     return load_countries_generic(
         FullCountryIndex[CountryProperties], locale=locale, loader=loader
     )
-
-
-# def __reload_countries():
-#     global __countries
-#     __countries = load_countries(data_cls=FullCountryIndex[CountryData])
-
-
-# __reload_countries()
-# default_dataloader.register_reload_callback(__reload_countries)
