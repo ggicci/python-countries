@@ -16,21 +16,26 @@ verify_ssl = true
 name = "pypi"
 
 [tool.pdm.dev-dependencies]
-dev = ["pytest", "pytest-cov>=3.0.0"]
+dev = [
+    "pytest>=7.0.1",
+    "pytest-cov>=4.0.0",
+]
 
 [project]
 name = "country-database"
 description = "Country information database. Including names, capitals, currencies, etc."
 authors = [{ name = "Ggicci", email = "ggicci.t@gmail.com" }]
-dependencies = []
+dependencies = [
+]
 requires-python = ">=3.6"
 readme = "README.md"
 license = { text = "MIT" }
 dynamic = ["version"]
+keywords = ["countries"]
 
 [project.urls]
-HomePage = "https://github.com/ggicci/python-countries"
-"Source Code" = "https://github.com/ggicci/python-countries"
+Homepage = "https://github.com/ggicci/python-countries"
+Repository = "https://github.com/ggicci/python-countries"
 "Bug Tracker" = "https://github.com/ggicci/python-countries/issues"
 
 [project.optional-dependencies]
