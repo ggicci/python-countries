@@ -19,14 +19,15 @@ name = "pypi"
 dev = [
     "pytest>=7.0.1",
     "pytest-cov>=4.0.0",
+    "pre-commit==2.20.0",
+    "isort==5.10.1",
 ]
 
 [project]
 name = "country-database"
 description = "Country information database. Including names, capitals, currencies, etc."
 authors = [{ name = "Ggicci", email = "ggicci.t@gmail.com" }]
-dependencies = [
-]
+dependencies = []
 requires-python = ">=3.7"
 readme = "README.md"
 license = { text = "MIT" }
@@ -43,3 +44,9 @@ Repository = "https://github.com/ggicci/python-countries"
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"
+
+
+[tool.isort]
+profile = "black"
+src_paths = ["src/country_database", "tests"]
+force_single_line = true

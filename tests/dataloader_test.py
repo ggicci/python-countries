@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+
 from country_database import DataLoader
 
 from .helper import CUSTOM_DATA_DIR

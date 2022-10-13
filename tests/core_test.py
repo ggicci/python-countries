@@ -1,4 +1,5 @@
-from country_database import load_countries, load_country
+from country_database import load_countries
+from country_database import load_country
 
 
 def test_load_country():

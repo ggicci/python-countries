@@ -1,14 +1,16 @@
 import pytest
-from country_database import (
-    DataLoader,
-    FullCountryIndex,
-    Property,
-    load_countries_generic,
-    load_country,
-    load_country_generic,
-)
 
-from .helper import CUSTOM_DATA_DIR, TOTAL_COUNTRIES, CustomCountry, CustomCountryIndex
+from country_database import DataLoader
+from country_database import FullCountryIndex
+from country_database import Property
+from country_database import load_countries_generic
+from country_database import load_country
+from country_database import load_country_generic
+
+from .helper import CUSTOM_DATA_DIR
+from .helper import TOTAL_COUNTRIES
+from .helper import CustomCountry
+from .helper import CustomCountryIndex
 
 
 class InvalidCountryProperties:

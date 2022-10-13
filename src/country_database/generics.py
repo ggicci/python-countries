@@ -1,7 +1,12 @@
-from dataclasses import dataclass, fields, is_dataclass
-from typing import Type, TypeVar
+from dataclasses import dataclass
+from dataclasses import fields
+from dataclasses import is_dataclass
+from typing import Type
+from typing import TypeVar
 
-from .dataloader import CountryCode, DataLoader, default_dataloader
+from .dataloader import CountryCode
+from .dataloader import DataLoader
+from .dataloader import default_dataloader
 from .property import Property
 
 
