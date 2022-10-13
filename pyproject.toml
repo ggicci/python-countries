@@ -27,7 +27,7 @@ description = "Country information database. Including names, capitals, currenci
 authors = [{ name = "Ggicci", email = "ggicci.t@gmail.com" }]
 dependencies = [
 ]
-requires-python = ">=3.6"
+requires-python = ">=3.7"
 readme = "README.md"
 license = { text = "MIT" }
 dynamic = ["version"]

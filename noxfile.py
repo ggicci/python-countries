@@ -11,7 +11,7 @@ import nox  # type: ignore
 
 os.environ.update({"PDM_IGNORE_SAVED_PYTHON": "1"})
 
-PYTHON_ALL_VERSIONS = ["3.6", "3.7", "3.8", "3.9", "3.10"]
+PYTHON_ALL_VERSIONS = ["3.7", "3.8", "3.9", "3.10"]
 PYTHON_DEFAULT_VERSION = "3.10"
 
 
