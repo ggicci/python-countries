@@ -19,6 +19,8 @@ PYTHON_DEFAULT_VERSION = "3.10"
 def test(session):
     session.run("pdm", "install", "-G", "dev", external=True)
     if session.python == "3.10":  # generate coverage report
-        session.run("pytest", "tests", "--cov", "--cov-report", "xml:/tmp/coverage.xml")
+        session.run(
+            "pytest", "tests", "--cov", "src", "--cov-report", "xml:/tmp/coverage.xml"
+        )
     else:
         session.run("pytest", "tests")
