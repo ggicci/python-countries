@@ -18,4 +18,7 @@ PYTHON_DEFAULT_VERSION = "3.10"
 @nox.session(python=PYTHON_ALL_VERSIONS)
 def test(session):
     session.run("pdm", "install", "-G", "dev", external=True)
-    session.run("pytest", "tests", "--cov", "--cov-report", "html")
+    if session.python == "3.10":  # generate coverage report
+        session.run("pytest", "tests", "--cov", "--cov-report", "xml:/tmp/coverage.xml")
+    else:
+        session.run("pytest", "tests")
