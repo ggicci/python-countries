@@ -24,3 +24,11 @@ jobs:
       uses: excitedleigh/setup-nox@v2.1.0
     - name: Run tests
       run: nox
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        name: codecov-umbrella
+        files: /tmp/coverage.xml
+        flags: unittests
+        fail_ci_if_error: true
+        verbose: true
