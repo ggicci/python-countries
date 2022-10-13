@@ -1,9 +1,14 @@
-from dataclasses import asdict, dataclass
-from typing import Dict, Generic
+from dataclasses import asdict
+from dataclasses import dataclass
+from typing import Dict
+from typing import Generic
 
-from .dataloader import DataLoader, default_dataloader
+from .dataloader import DataLoader
+from .dataloader import default_dataloader
 from .generated import CountryProperties
-from .generics import T_CountryProperties, load_countries_generic, load_country_generic
+from .generics import T_CountryProperties
+from .generics import load_countries_generic
+from .generics import load_country_generic
 
 
 @dataclass(frozen=True)

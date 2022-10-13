@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from country_database import CountryPropertiesBase, Property
+from country_database import CountryPropertiesBase
+from country_database import Property
 
 CUSTOM_DATA_DIR = Path(__file__).parent / "custom"
 TOTAL_COUNTRIES = 249
