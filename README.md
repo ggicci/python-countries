@@ -1,5 +1,12 @@
 # python-countries
 
+<div align="center">
+
+[![Run tests](https://github.com/ggicci/python-countries/actions/workflows/run-tests.yml/badge.svg?branch=main)](https://github.com/ggicci/python-countries/actions/workflows/run-tests.yml)
+[![codecov](https://codecov.io/gh/ggicci/python-countries/branch/main/graph/badge.svg?token=DPVPXJLDND)](https://codecov.io/gh/ggicci/python-countries)
+
+</div>
+
 Country Database in Python
 
 - name
